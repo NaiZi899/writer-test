@@ -33,7 +33,7 @@
   // ---------- 工具 ----------
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
-  const pad3 = (n) => String(n).padStart(3, "0");
+  const pad3 = (n) => String(n).padStart(4, "0"); // 章节文件名是四位：0001.json
 
   function escapeHtml(s) {
     return s.replace(/[&<>"']/g, (c) => ({
