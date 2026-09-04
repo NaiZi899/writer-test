@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="偏爱到骨 · 一本长篇言情小说的在线阅读器">
+<title>偏爱到骨</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- 顶部菜单（默认隐藏，点击正文中央或滑过顶边唤出） -->
+<header id="topbar" aria-hidden="true">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-title" id="brandTitle">偏爱到骨</span>
+      <span class="brand-chapter" id="brandChapter">—</span>
+    </div>
+    <nav class="topbar-nav" aria-label="顶部导航">
+      <button type="button" data-action="prev" title="上一章（←）">‹ 上一章</button>
+      <button type="button" data-action="toc" title="目录">目 录</button>
+      <button type="button" data-action="next" title="下一章（→）">下一章 ›</button>
+      <button type="button" data-action="settings" title="设置">设 置</button>
+      <button type="button" data-action="about" title="关于本书">关 于</button>
+    </nav>
+  </div>
+</header>
+
+<!-- 进度条 -->
+<div id="progress" aria-hidden="true"><div id="progressBar"></div></div>
+
+<!-- 主体：章节内容 -->
+<main id="reader" tabindex="-1">
+  <article id="chapter" class="content">
+    <p class="loading">章节载入中…</p>
+  </article>
+
+  <!-- 章末导航 -->
+  <nav id="chapterEnd" class="chapter-end" hidden>
+    <span class="end-mark">— 本章完 —</span>
+    <div class="end-buttons">
+      <button type="button" data-action="prev">‹ 上一章</button>
+      <button type="button" data-action="toc">目 录</button>
+      <button type="button" data-action="next">下一章 ›</button>
+    </div>
+  </nav>
+</main>
+
+<!-- 目录浮窗 -->
+<aside id="tocPanel" class="overlay" hidden aria-label="章节目录">
+  <div class="overlay-card toc-card">
+    <div class="overlay-head">
+      <h2>目 录</h2>
+      <button type="button" class="close" data-action="close" aria-label="关闭">×</button>
+    </div>
+    <div class="toc-search">
+      <input type="search" id="tocSearch" placeholder="按章号或标题搜索…" autocomplete="off">
+    </div>
+    <div class="toc-list" id="tocList" role="list">
+      <p class="muted">载入中…</p>
+    </div>
+  </div>
+</aside>
+
+<!-- 设置浮窗 -->
+<aside id="settingsPanel" class="overlay" hidden aria-label="阅读设置">
+  <div class="overlay-card settings-card">
+    <div class="overlay-head">
+      <h2>阅读设置</h2>
+      <button type="button" class="close" data-action="close" aria-label="关闭">×</button>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">字号</span>
+      <div class="setting-buttons" data-setting="fontSize">
+        <button data-value="16">小</button>
+        <button data-value="18">中</button>
+        <button data-value="20">大</button>
+        <button data-value="22">特大</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">行距</span>
+      <div class="setting-buttons" data-setting="lineHeight">
+        <button data-value="1.6">紧凑</button>
+        <button data-value="1.75">适中</button>
+        <button data-value="1.95">舒展</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">字族</span>
+      <div class="setting-buttons" data-setting="fontFamily">
+        <button data-value="serif">宋体</button>
+        <button data-value="sans">黑体</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">主题</span>
+      <div class="setting-buttons" data-setting="theme">
+        <button data-value="paper">纸质</button>
+        <button data-value="sepia">棕褐</button>
+        <button data-value="night">夜读</button>
+        <button data-value="auto">跟随系统</button>
+      </div>
+    </div>
+    <div class="setting-row setting-toggle">
+      <span class="setting-label">点击翻页</span>
+      <label class="switch">
+        <input type="checkbox" data-setting="clickPaginate">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-row setting-toggle">
+      <span class="setting-label">横向翻页（PC）</span>
+      <label class="switch">
+        <input type="checkbox" data-setting="horizontalFlip">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="muted settings-hint">快捷键：← / → 翻章 · 空格 滚屏 · Esc 关闭浮窗 · g 跳章 · ? 帮助</p>
+  </div>
+</aside>
+
+<!-- 关于浮窗 -->
+<aside id="aboutPanel" class="overlay" hidden aria-label="关于本书">
+  <div class="overlay-card about-card">
+    <div class="overlay-head">
+      <h2>关于本书</h2>
+      <button type="button" class="close" data-action="close" aria-label="关闭">×</button>
+    </div>
+    <div class="about-body">
+      <h3 class="about-title" id="aboutTitle">偏爱到骨</h3>
+      <p class="about-author" id="aboutAuthor"></p>
+      <p class="about-intro" id="aboutIntro"></p>
+      <div class="about-stats" id="aboutStats"></div>
+      <div class="about-actions">
+        <button type="button" data-action="start">从第一章开始</button>
+        <button type="button" data-action="last">继续上次阅读</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- 跳章对话框 -->
+<aside id="gotoPanel" class="overlay overlay-mini" hidden aria-label="跳转章节">
+  <div class="overlay-card goto-card">
+    <div class="overlay-head">
+      <h2>跳转到章节</h2>
+      <button type="button" class="close" data-action="close" aria-label="关闭">×</button>
+    </div>
+    <div class="goto-body">
+      <input type="number" id="gotoInput" min="1" placeholder="输入章号" autocomplete="off">
+      <button type="button" id="gotoConfirm">前往</button>
+    </div>
+  </div>
+</aside>
+
+<!-- 快捷键帮助 -->
+<aside id="helpPanel" class="overlay overlay-mini" hidden aria-label="快捷键帮助">
+  <div class="overlay-card help-card">
+    <div class="overlay-head">
+      <h2>快捷键</h2>
+      <button type="button" class="close" data-action="close" aria-label="关闭">×</button>
+    </div>
+    <table class="help-table">
+      <tbody>
+        <tr><th>← / →</th><td>上一章 / 下一章</td></tr>
+        <tr><th>↑ / ↓</th><td>向上 / 向下滚动</td></tr>
+        <tr><th>Space</th><td>向下滚一屏</td></tr>
+        <tr><th>Home / End</th><td>本章首页 / 末页</td></tr>
+        <tr><th>g</th><td>跳转到指定章</td></tr>
+        <tr><th>t</th><td>打开 / 关闭目录</td></tr>
+        <tr><th>?</th><td>显示 / 隐藏本帮助</td></tr>
+        <tr><th>Esc</th><td>关闭浮窗</td></tr>
+        <tr><th>左 1/3 屏</th><td>上一章（点击）</td></tr>
+        <tr><th>右 1/3 屏</th><td>下一章（点击）</td></tr>
+        <tr><th>中央点击</th><td>显示 / 隐藏菜单</td></tr>
+      </tbody>
+    </table>
+  </div>
+</aside>
+
+<!-- 背景遮罩 -->
+<div id="scrim" class="scrim" hidden></div>
+
+<script src="reader.js" defer></script>
+</body>
+</html>

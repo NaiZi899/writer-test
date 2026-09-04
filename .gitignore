@@ -1,0 +1,7 @@
+# 不要上传原始 txt 切片
+偏爱到骨_*.txt
+# 不要上传切分脚本
+split_chapters.py
+# python 缓存
+__pycache__/
+*.pyc
