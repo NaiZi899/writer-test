@@ -6,9 +6,12 @@
 (() => {
   "use strict";
 
-  const CHAPTERS_DIR = "chapters/";
+  const CHAPTERS_DIR = (location.pathname.replace(/[^/]*$/, "") || "/") + "chapters/";
   const MANIFEST_URL = CHAPTERS_DIR + "_manifest.json";
-  const META_URL = "assets/meta.json";
+  const META_URL = (location.pathname.replace(/[^/]*$/, "") || "/") + "assets/meta.json";
+
+  // 用绝对 URL 重写（避免相对路径在不同协议/部署下解析异常）
+  const abs = (u) => new URL(u, location.href).toString();
 
   // ---------- 状态 ----------
   const state = {
@@ -39,9 +42,22 @@
   }
 
   async function fetchJSON(url) {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error("HTTP " + r.status + " for " + url);
-    return r.json();
+    const target = abs(url);
+    let lastErr = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const r = await fetch(target, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status + " for " + target);
+        return await r.json();
+      } catch (e) {
+        lastErr = e;
+        if (attempt < 3) {
+          // 第 1、2 次失败：等 800ms 再试
+          await new Promise((r) => setTimeout(r, 800 * attempt));
+        }
+      }
+    }
+    throw lastErr;
   }
 
   // ---------- 初始化 ----------
@@ -62,9 +78,12 @@
       state.meta = { ...state.meta, ...meta };
       $("#brandTitle").textContent = state.meta.title || "偏爱到骨";
     } catch (e) {
-      console.error(e);
+      console.error("[reader] manifest load failed:", e);
       $("#chapter").innerHTML =
-        '<p class="loading">章节清单加载失败。请确认 chapters/_manifest.json 存在并通过 HTTP（不能直接 file:// 打开）访问。</p>';
+        '<p class="loading">章节清单加载失败。<br><br>' +
+        '<small style="color:var(--ink-mute)">地址：' + escapeHtml(MANIFEST_URL) +
+        '<br>原因：' + escapeHtml(String(e.message || e)) + '</small><br><br>' +
+        '<button type="button" data-action="retry">重试</button></p>';
       return;
     }
 
@@ -108,7 +127,12 @@
     try {
       data = await fetchJSON(CHAPTERS_DIR + pad3(num) + ".json");
     } catch (e) {
-      article.innerHTML = '<p class="loading">章节加载失败。</p>';
+      console.error("[reader] chapter load failed:", e);
+      article.innerHTML =
+        '<p class="loading">章节加载失败。<br><br>' +
+        '<small style="color:var(--ink-mute)">地址：' + escapeHtml(CHAPTERS_DIR + pad3(num) + ".json") +
+        '<br>原因：' + escapeHtml(String(e.message || e)) + '</small><br><br>' +
+        '<button type="button" data-action="retry-chap" data-num="' + num + '">重试本章</button></p>';
       return;
     }
 
@@ -247,6 +271,10 @@
         case "last": closeOverlay();
           const last = parseInt(localStorage.getItem("pia:lastChapter") || "1", 10);
           loadChapter(last);
+          break;
+        case "retry": init(); break;
+        case "retry-chap":
+          loadChapter(parseInt(btn.dataset.num, 10));
           break;
         case "close": closeOverlay(); break;
       }
